@@ -1,4 +1,10 @@
-# Rsbuild Project
+# Quarto
+
+## Overview
+
+This is an experiment where I rebuilt the [Quarto board game](https://en.wikipedia.org/wiki/Quarto_(board_game)) using a binary representation.
+
+I also experimented with [Rsbuild](https://rsbuild.dev) and [Jujutsu version control](https://github.com/jj-vcs/jj) system.
 
 ## Setup
 
