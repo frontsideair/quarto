@@ -7,6 +7,11 @@ import {
   isDiagonalOccupied,
   isWinning,
   generateGameState,
+  type Piece,
+  getRemainingPieces,
+  toPiece,
+  getSelectedPiece,
+  fromPiece,
 } from "./lib.ts";
 
 test("isWinningLine", (t) => {
@@ -73,4 +78,50 @@ test("isWinning", (t) => {
   t.assert.equal(isWinning(game1), true);
   t.assert.equal(isWinning(game2), true);
   t.assert.equal(isWinning(generateGameState()), false);
+});
+
+test("getRemainingPieces", (t) => {
+  const allPieces: Piece[] = [];
+  for (let i = 0; i < 16; i++) {
+    allPieces.push({
+      isShort: i % 2 === 0,
+      isLight: i % 4 === 0,
+      isRound: i % 8 === 0,
+      isSolid: i % 16 === 0,
+    });
+  }
+
+  const piece = 0b0000;
+
+  const game = play([[piece, { row: 0, column: 1 }]]);
+
+  const remainingPieces = getRemainingPieces(game);
+
+  const [removedPiece] = allPieces.filter((piece) =>
+    remainingPieces.some(
+      (remainingPiece) =>
+        remainingPiece.isLight !== piece.isLight &&
+        remainingPiece.isRound !== piece.isRound &&
+        remainingPiece.isShort !== piece.isShort &&
+        remainingPiece.isSolid !== piece.isSolid
+    )
+  );
+
+  t.assert.deepEqual(removedPiece, toPiece(piece));
+});
+
+test("getSelectedPiece", (t) => {
+  t.assert.deepEqual(getSelectedPiece(generateGameState()), null);
+});
+
+test("fromPiece & toPiece", (t) => {
+  for (let i = 0; i < 16; i++) {
+    const piece = {
+      isShort: i % 2 === 0,
+      isLight: i % 4 === 0,
+      isRound: i % 8 === 0,
+      isSolid: i % 16 === 0,
+    };
+    t.assert.deepEqual(toPiece(fromPiece(piece)), piece);
+  }
 });

@@ -48,14 +48,14 @@ type Board = {
   diagonals: number[];
 };
 
-type GameState = {
+export type GameState = {
   remainingPieces: number;
   selectedPiece: number;
   occupiedCoordinates: number;
   board: Board;
 };
 
-type Coordinate = {
+export type Coordinate = {
   row: number;
   column: number;
 };
@@ -79,6 +79,7 @@ export function generateGameState() {
 }
 
 function printBoard(game: GameState) {
+  const output = [];
   const board = game.board;
   for (let i = 0; i < 4; i++) {
     const row = board.rows[i].toString(2).padStart(16, "0");
@@ -93,30 +94,116 @@ function printBoard(game: GameState) {
         line += "....";
       }
     }
-    console.log(line);
+    output.push(line);
   }
+  return output.join("\n");
 }
 
 export function printGame(game: GameState) {
-  console.log(
-    "Remaining pieces: ",
-    game.remainingPieces.toString(2).padStart(16, "0")
+  const output = [];
+  output.push(
+    "Remaining pieces: " + game.remainingPieces.toString(2).padStart(16, "0")
   );
-  console.log(
-    "Selected piece: ",
-    game.selectedPiece.toString(2).padStart(4, "0")
+  output.push(
+    "Selected piece: " + game.selectedPiece.toString(2).padStart(4, "0")
   );
-  console.log(
-    "Occupied coordinates: ",
-    game.occupiedCoordinates.toString(2).padStart(16, "0")
+  output.push(
+    "Occupied coordinates: " +
+      game.occupiedCoordinates.toString(2).padStart(16, "0")
   );
-  console.log(
-    "Player to move: ",
-    playerHasTurn(game) ? "Player 1" : "Player 2"
+  output.push(printStatus(getStatus(game)));
+  output.push(printBoard(game));
+  // output.push(game.board.diagonals.map((c) => c.toString(2).padStart(16, "0")));
+  return output.join("\n");
+}
+
+export type Piece = {
+  isShort: boolean;
+  isLight: boolean;
+  isSolid: boolean;
+  isRound: boolean;
+};
+
+export function toPiece(piece: number): Piece {
+  return {
+    isShort: Boolean(piece & 0b0001),
+    isLight: Boolean(piece & 0b0010),
+    isSolid: Boolean(piece & 0b0100),
+    isRound: Boolean(piece & 0b1000),
+  };
+}
+
+export function fromPiece(piece: Piece) {
+  return (
+    (piece.isShort ? 0b0001 : 0) |
+    (piece.isLight ? 0b0010 : 0) |
+    (piece.isSolid ? 0b0100 : 0) |
+    (piece.isRound ? 0b1000 : 0)
   );
-  printBoard(game);
-  console.log("Is winning: ", isWinning(game));
-  // console.log(game.board.diagonals.map((c) => c.toString(2).padStart(16, "0")));
+}
+
+export type GameStatus = {
+  winning: boolean;
+  player: "Player 1" | "Player 2";
+  selectedPiece: Piece | null;
+};
+
+export function getStatus(game: GameState) {
+  const player = playerHasTurn(game) ? "Player 1" : "Player 2";
+  const selectedPiece = getSelectedPiece(game);
+  return {
+    winning: isWinning(game),
+    player: player,
+    selectedPiece,
+  } satisfies GameStatus;
+}
+
+export function printStatus({ winning, player }: GameStatus) {
+  if (winning) {
+    return `Winning: ${player}`;
+  } else {
+    return `Player has turn: ${player}`;
+  }
+}
+
+export function getRemainingPieces(game: GameState) {
+  const result: Piece[] = [];
+  for (let i = 0; i < 16; i++) {
+    const mask = 1 << i;
+    if ((game.remainingPieces & mask) === mask) {
+      result.push(toPiece(i));
+    }
+  }
+  return result;
+}
+
+export function getSelectedPiece(game: GameState) {
+  const numberOfOccupiedCoordinates = countSetBits(game.occupiedCoordinates);
+  const numberOfRemainingPieces = countSetBits(game.remainingPieces);
+  if (numberOfOccupiedCoordinates + numberOfRemainingPieces === 16) {
+    return null;
+  } else {
+    return toPiece(game.selectedPiece);
+  }
+}
+
+export function getBoard(game: GameState) {
+  const output = [];
+  for (let i = 0; i < 4; i++) {
+    const row = game.board.rows[i];
+    const line = [];
+    for (let j = 0; j < 4; j++) {
+      const piece = (row >> (j * 4)) & 0b1111;
+      const isPositionOccupied = game.occupiedCoordinates & (1 << (i * 4 + j));
+      if (isPositionOccupied) {
+        line.push(toPiece(piece));
+      } else {
+        line.push(null);
+      }
+    }
+    output.push(line);
+  }
+  return output;
 }
 
 const condition = 0b0001_0001_0001_0001;
