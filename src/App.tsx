@@ -4,15 +4,12 @@ import {
   generateGameState,
   getBoard,
   getRemainingPieces,
-  getSelectedPiece,
   getStatus,
   placePiece,
-  printGame,
   selectPiece,
 } from "../lib";
 import { Board } from "./Board";
 import { RemainingPieces } from "./RemainingPieces";
-import { SelectedPiece } from "./SelectedPiece";
 import { GameStatus } from "./GameStatus";
 
 const App = () => {
