@@ -14,6 +14,7 @@ export function RemainingPieces({ data, onSelect }: Props) {
           list-style-type: none;
           padding: 0;
           display: flex;
+          overflow-x: auto;
         }
         li {
           cursor: pointer;

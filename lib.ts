@@ -42,6 +42,7 @@ We need to generate magic numbers to calculate columns and diagonals.
 In total, we would need 16 + 4 + 16 + 64 = 100 bits. It's not bad.
 */
 
+// TODO: derive board state from bitmap representation
 type Board = {
   rows: number[];
   columns: number[];
