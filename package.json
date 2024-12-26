@@ -1,19 +1,25 @@
 {
   "name": "quarto",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "sideEffects": false,
   "scripts": {
-    "dev": "tsx --watch main.ts",
-    "start": "tsx main.ts",
-    "test": "tsx --test --watch"
+    "dev": "rsbuild dev --open",
+    "build": "rsbuild build",
+    "preview": "rsbuild preview",
+    "test": "node --test --watch --experimental-strip-types"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
   "devDependencies": {
+    "@rsbuild/core": "^1.1.8",
+    "@rsbuild/plugin-react": "^1.0.7",
     "@types/node": "^22.10.2",
-    "tsx": "^4.19.2",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "typescript": "^5.7.2"
   }
 }

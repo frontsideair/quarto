@@ -7,7 +7,7 @@ import {
   isDiagonalOccupied,
   isWinning,
   generateGameState,
-} from "./lib";
+} from "./lib.ts";
 
 test("isWinningLine", (t) => {
   t.assert.equal(isWinningLine(0b0001_0001_0001_0001), true);
