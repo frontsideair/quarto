@@ -40,6 +40,7 @@ const App = () => {
           }
         }}
       />
+      <a href="https://github.com/frontsideair/quarto">Fork me on GitHub</a>
     </div>
   );
 };
