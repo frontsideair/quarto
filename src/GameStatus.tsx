@@ -9,12 +9,28 @@ type Props = {
 export function GameStatus({ data, resetGame }: Props) {
   return (
     <>
-      <h2>GameStatus</h2>
-      <p>{printStatus(data)}</p>
-      <SelectedPiece data={data.selectedPiece} />
-      <button onClick={() => resetGame()}>
-        {data.winning ? "Play again" : "Reset"}
-      </button>
+      <style>{`
+        .controls {
+          display: flex;
+          justify-content: center;
+          gap: 1rem;
+          background-color: white;
+          color: black;
+          padding: 1rem;
+          width: 120px;
+          height: 24px;
+        }
+        .status {
+          color: rgb(107 104 107);
+        }
+      `}</style>
+      <p className="status">{printStatus(data)}</p>
+      <div className="controls">
+        {data.winning ? null : <SelectedPiece data={data.selectedPiece} />}
+        <button onClick={() => resetGame()}>
+          {data.winning ? "Play again?" : "Reset"}
+        </button>
+      </div>
     </>
   );
 }

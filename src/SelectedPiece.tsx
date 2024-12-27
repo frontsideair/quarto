@@ -6,7 +6,5 @@ type Props = {
 };
 
 export function SelectedPiece({ data }: Props) {
-  return (
-    <div>Selected piece: {data ? <Piece data={data} /> : <EmptyPiece />}</div>
-  );
+  return <div>{data ? <Piece data={data} /> : <EmptyPiece />}</div>;
 }

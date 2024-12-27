@@ -19,7 +19,22 @@ const App = () => {
 
   return (
     <div className="content">
-      <h1>Quarto</h1>
+      <style>{`
+        html {
+          color-scheme: dark;
+        }
+        .content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+        h1 {
+          font-size: 7rem;
+          margin: 0;
+        }
+      `}</style>
+      <h1>quarto</h1>
       <GameStatus
         data={gameStatus}
         resetGame={() => setGameState(generateGameState())}

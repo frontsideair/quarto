@@ -15,13 +15,14 @@ export function RemainingPieces({ data, onSelect }: Props) {
           padding: 0;
           display: flex;
           overflow-x: auto;
+          background-color: white;
+          max-width: 100vw;
         }
         li {
           cursor: pointer;
           margin: 0.5rem;
         }
       `}</style>
-      <h2>RemainingPieces</h2>
       <ul>
         {data.map((piece, index) => (
           <li key={index} onClick={() => onSelect(piece)}>

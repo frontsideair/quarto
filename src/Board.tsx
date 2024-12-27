@@ -12,15 +12,16 @@ export function Board({ data, onSelect }: Props) {
       <style>{`
         table {
           border-collapse: collapse;
+          background-color: white;
         }
         td {
-          border: 1px solid black;
+          border: 5px solid rgb(61 59 61);
           width: 50px;
           height: 50px;
           text-align: center;
+          cursor: pointer;
         }
       `}</style>
-      <h2>Board</h2>
       <table>
         <tbody>
           {Array.from({ length: 4 }).map((_, i) => (
