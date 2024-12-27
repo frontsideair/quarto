@@ -15,7 +15,7 @@ export function Board({ data, onSelect }: Props) {
           background-color: white;
         }
         td {
-          border: 5px solid rgb(61 59 61);
+          border: 5px solid var(--accent);
           width: 50px;
           height: 50px;
           text-align: center;

@@ -160,9 +160,9 @@ export function getStatus(game: GameState) {
 
 export function printStatus({ winning, player }: GameStatus) {
   if (winning) {
-    return `Winning: ${player}`;
+    return `Winner: ${player}`;
   } else {
-    return `Player has turn: ${player}`;
+    return `Player to move: ${player}`;
   }
 }
 

@@ -22,9 +22,11 @@ const App = () => {
       <style>{`
         html {
           color-scheme: dark;
+          --accent: rgb(143 112 112);
         }
         .content {
           display: flex;
+          gap: 4px;
           flex-direction: column;
           align-items: center;
           text-align: center;
@@ -32,6 +34,13 @@ const App = () => {
         h1 {
           font-size: 7rem;
           margin: 0;
+        }
+        a {
+          color: white;
+        }
+        footer {
+          display: flex;
+          gap: 4px;
         }
       `}</style>
       <h1>quarto</h1>
@@ -55,7 +64,19 @@ const App = () => {
           }
         }}
       />
-      <a href="https://github.com/frontsideair/quarto">Fork me on GitHub</a>
+      <footer>
+        Originally designed by Blaise Müller &middot;
+        <a
+          href="https://en.wikipedia.org/wiki/Quarto_(board_game)"
+          target="_blank"
+        >
+          Learn the game
+        </a>
+        &middot;
+        <a href="https://github.com/frontsideair/quarto" target="_blank">
+          Fork me on GitHub
+        </a>
+      </footer>
     </div>
   );
 };
