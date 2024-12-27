@@ -40,7 +40,8 @@ const App = () => {
         }
         footer {
           display: flex;
-          gap: 4px;
+          gap: 8px;
+          margin-top: 1rem;
         }
       `}</style>
       <h1>quarto</h1>
@@ -65,14 +66,13 @@ const App = () => {
         }}
       />
       <footer>
-        Originally designed by Blaise Müller &middot;
+        Originally designed by Blaise Müller
         <a
           href="https://en.wikipedia.org/wiki/Quarto_(board_game)"
           target="_blank"
         >
           Learn the game
         </a>
-        &middot;
         <a href="https://github.com/frontsideair/quarto" target="_blank">
           Fork me on GitHub
         </a>
