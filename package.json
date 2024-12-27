@@ -8,7 +8,8 @@
     "dev": "rsbuild dev --open",
     "build": "rsbuild build",
     "preview": "rsbuild preview",
-    "test": "node --test --watch --experimental-strip-types"
+    "test": "node --test --watch --experimental-strip-types",
+    "typecheck": "tsc"
   },
   "engines": {
     "node": "^22.11.0",

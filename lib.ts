@@ -42,18 +42,17 @@ We need to generate magic numbers to calculate columns and diagonals.
 In total, we would need 16 + 4 + 16 + 64 = 100 bits. It's not bad.
 */
 
-// TODO: derive board state from bitmap representation
 type Board = {
   rows: number[];
   columns: number[];
   diagonals: number[];
 };
 
-export type GameState = {
+type GameState = {
   remainingPieces: number;
   selectedPiece: number;
   occupiedCoordinates: number;
-  board: Board;
+  boardBitmap: bigint;
 };
 
 export type Coordinate = {
@@ -65,57 +64,57 @@ export function generateGameState() {
   const remainingPieces = 0b1111_1111_1111_1111;
   const selectedPiece = 0b0000;
   const occupiedCoordinates = 0b0000_0000_0000_0000;
-  const board = {
-    rows: [
-      0b0000_0000_0000_0000, 0b0000_0000_0000_0000, 0b0000_0000_0000_0000,
-      0b0000_0000_0000_0000,
-    ],
-    columns: [
-      0b0000_0000_0000_0000, 0b0000_0000_0000_0000, 0b0000_0000_0000_0000,
-      0b0000_0000_0000_0000,
-    ],
-    diagonals: [0b0000_0000_0000_0000, 0b0000_0000_0000_0000],
-  };
-  return { remainingPieces, selectedPiece, occupiedCoordinates, board };
+  const boardBitmap = 0n;
+  return { remainingPieces, selectedPiece, occupiedCoordinates, boardBitmap };
 }
 
-function printBoard(game: GameState) {
-  const output = [];
-  const board = game.board;
-  for (let i = 0; i < 4; i++) {
-    const row = board.rows[i].toString(2).padStart(16, "0");
-    let line = "";
-    for (let j = 0; j < 4; j++) {
-      const piece = row.slice(j * 4, j * 4 + 4);
-      const isPositionOccupied =
-        game.occupiedCoordinates & (1 << (i * 4 + (3 - j)));
-      if (isPositionOccupied) {
-        line += piece.padStart(4, "0");
-      } else {
-        line += "....";
-      }
+function extract4thBitWithOffset(input: bigint, offset: number) {
+  let result = 0n;
+  let bitIndex = 0;
+
+  for (let i = 0n; i < 64n; i += 4n) {
+    let targetBit = i + BigInt(offset); // Apply the offset
+    if (targetBit < 64n && targetBit >= 0n) {
+      // Ensure within bounds
+      let bit = (input >> targetBit) & 1n; // Extract the bit with offset
+      result |= bit << BigInt(bitIndex); // Set it in the result
+      bitIndex++;
     }
-    output.push(line);
   }
-  return output.join("\n");
+
+  return Number(result); // Convert to a number if needed
 }
 
-export function printGame(game: GameState) {
-  const output = [];
-  output.push(
-    "Remaining pieces: " + game.remainingPieces.toString(2).padStart(16, "0")
-  );
-  output.push(
-    "Selected piece: " + game.selectedPiece.toString(2).padStart(4, "0")
-  );
-  output.push(
-    "Occupied coordinates: " +
-      game.occupiedCoordinates.toString(2).padStart(16, "0")
-  );
-  output.push(printStatus(getStatus(game)));
-  output.push(printBoard(game));
-  // output.push(game.board.diagonals.map((c) => c.toString(2).padStart(16, "0")));
-  return output.join("\n");
+function extractDiagonal(grid: bigint, main = true) {
+  let diagonal = 0n;
+  for (let i = 0n; i < 4n; i++) {
+    let rowStart = i * 16n; // Starting bit of the row
+    let colOffset = main ? i * 4n : (3n - i) * 4n; // Main or anti-diagonal
+    let position = rowStart + colOffset; // Bit position of the cell
+    let value = (grid >> position) & 0b1111n; // Extract 4 bits
+    diagonal |= value << (i * 4n); // Place it in the diagonal
+  }
+  return Number(diagonal);
+}
+
+function toBoard(boardBitmap: GameState["boardBitmap"]) {
+  const rows = [
+    boardBitmap & 0b1111_1111_1111_1111n,
+    (boardBitmap >> 16n) & 0b1111_1111_1111_1111n,
+    (boardBitmap >> 32n) & 0b1111_1111_1111_1111n,
+    (boardBitmap >> 48n) & 0b1111_1111_1111_1111n,
+  ].map(Number);
+  const columns = [
+    extract4thBitWithOffset(boardBitmap, 0),
+    extract4thBitWithOffset(boardBitmap, 1),
+    extract4thBitWithOffset(boardBitmap, 2),
+    extract4thBitWithOffset(boardBitmap, 3),
+  ];
+  const diagonals = [
+    extractDiagonal(boardBitmap, true),
+    extractDiagonal(boardBitmap, false),
+  ];
+  return { rows, columns, diagonals } satisfies Board;
 }
 
 export type Piece = {
@@ -191,7 +190,7 @@ export function getSelectedPiece(game: GameState) {
 export function getBoard(game: GameState) {
   const output = [];
   for (let i = 0; i < 4; i++) {
-    const row = game.board.rows[i];
+    const row = toBoard(game.boardBitmap).rows[i];
     const line = [];
     for (let j = 0; j < 4; j++) {
       const piece = (row >> (j * 4)) & 0b1111;
@@ -233,13 +232,12 @@ export function isDiagonalOccupied(diagonalIndex: number, game: GameState) {
 }
 
 export function isWinning(game: GameState) {
-  const rows = game.board.rows.filter((row, index) =>
-    isRowOccupied(index, game)
-  );
-  const columns = game.board.columns.filter((column, index) =>
+  const board = toBoard(game.boardBitmap);
+  const rows = board.rows.filter((_, index) => isRowOccupied(index, game));
+  const columns = board.columns.filter((_, index) =>
     isColumnOccupied(index, game)
   );
-  const diagonals = game.board.diagonals.filter((diagonal, index) =>
+  const diagonals = board.diagonals.filter((_, index) =>
     isDiagonalOccupied(index, game)
   );
   return (
@@ -272,29 +270,17 @@ export function placePiece(game: GameState, coordinate: Coordinate) {
   const position = 1 << (coordinate.row * 4 + coordinate.column);
   const selectedPiece = 0b0000;
   const occupiedCoordinates = game.occupiedCoordinates | position;
+  const boardBitmap =
+    game.boardBitmap |
+    (BigInt(game.selectedPiece) <<
+      BigInt(coordinate.row * 16 + coordinate.column * 4));
 
-  const rows = game.board.rows.map((row: number, index: number) => {
-    return index === coordinate.row
-      ? row | (game.selectedPiece << (coordinate.column * 4))
-      : row;
-  });
-  const columns = game.board.columns.map((column: number, index: number) => {
-    return index === coordinate.column
-      ? column | (game.selectedPiece << (coordinate.row * 4))
-      : column;
-  });
-  const diagonals = [
-    (game.board.diagonals[0] |=
-      coordinate.row === coordinate.column
-        ? game.selectedPiece << (coordinate.row * 4)
-        : 0),
-    (game.board.diagonals[1] |=
-      coordinate.row === 3 - coordinate.column
-        ? game.selectedPiece << (coordinate.row * 4)
-        : 0),
-  ];
-  const board = { rows, columns, diagonals };
-  return { ...game, selectedPiece, occupiedCoordinates, board };
+  return {
+    ...game,
+    selectedPiece,
+    occupiedCoordinates,
+    boardBitmap,
+  };
 }
 
 function playMove(game: GameState, piece: number, coordinate: Coordinate) {
