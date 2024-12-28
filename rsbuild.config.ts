@@ -9,6 +9,10 @@ export default defineConfig({
         tag: "link",
         attrs: { rel: "manifest", href: "manifest.json" },
       },
+      {
+        tag: "link",
+        attrs: { rel: "apple-touch-icon", href: "apple-touch-icon.png" },
+      },
     ],
   },
   plugins: [pluginReact()],

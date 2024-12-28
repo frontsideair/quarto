@@ -6,10 +6,11 @@
   "sideEffects": false,
   "scripts": {
     "dev": "rsbuild dev --open",
-    "build": "rsbuild build",
+    "build": "pnpm run apple-touch-icon && rsbuild build",
     "preview": "rsbuild preview",
     "test": "node --test --watch --experimental-strip-types",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "apple-touch-icon": "sharp -i public/icon.svg -o public/apple-touch-icon.png resize 180 180"
   },
   "engines": {
     "node": "^22.11.0",
@@ -25,6 +26,7 @@
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "sharp-cli": "^5.1.0",
     "typescript": "^5.7.2"
   }
 }
