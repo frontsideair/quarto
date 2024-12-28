@@ -13,3 +13,4 @@ dist/
 .idea
 
 public/apple-touch-icon.png
+public/favicon.ico

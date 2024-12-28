@@ -6,11 +6,13 @@
   "sideEffects": false,
   "scripts": {
     "dev": "rsbuild dev --open",
-    "build": "pnpm run apple-touch-icon && rsbuild build",
+    "build": "pnpm run icons && rsbuild build",
     "preview": "rsbuild preview",
     "test": "node --test --watch --experimental-strip-types",
     "typecheck": "tsc",
-    "apple-touch-icon": "sharp -i public/icon.svg -o public/apple-touch-icon.png resize 180 180"
+    "icon:apple-touch-icon": "sharp -i public/icon.svg -o public/apple-touch-icon.png resize 180 180",
+    "icon:favicon": "sharp -i public/icon.svg -o public/favicon.ico resize 32 32",
+    "icons": "pnpm run /icon:.*/"
   },
   "engines": {
     "node": "^22.11.0",
